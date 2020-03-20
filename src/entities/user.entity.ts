@@ -55,7 +55,6 @@ export class UserEntity extends AbstractEntity {
     type => ArticleEntity,
     article => article.favoritedBy,
   )
-  @JoinColumn()
   favorites: ArticleEntity[];
 
   @BeforeInsert()
