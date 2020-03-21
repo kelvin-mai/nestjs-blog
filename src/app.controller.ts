@@ -9,4 +9,10 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  @Get('/tags')
+  async findTags() {
+    const tags = await this.appService.findTags();
+    return { tags };
+  }
 }
