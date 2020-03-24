@@ -6,12 +6,13 @@ import {
   Body,
   ValidationPipe,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { User } from 'src/auth/user.decorator';
 import { AuthGuard } from '@nestjs/passport';
-import { UserEntity } from 'src/entities/user.entity';
-import { UpdateUserDTO } from 'src/models/user.model';
+
+import { User } from 'src/auth/user.decorator';
 import { AuthService } from 'src/auth/auth.service';
+import { UserEntity } from 'src/entities/user.entity';
+import { UpdateUserDTO, AuthResponse } from 'src/models/user.model';
+import { ResponseObject } from 'src/models/response.model';
 
 @Controller('user')
 export class UserController {
@@ -19,17 +20,21 @@ export class UserController {
 
   @Get()
   @UseGuards(AuthGuard())
-  findCurrentUser(@User() { username }: UserEntity) {
-    return this.authService.findCurrentUser(username);
+  async findCurrentUser(
+    @User() { username }: UserEntity,
+  ): Promise<ResponseObject<'user', AuthResponse>> {
+    const user = await this.authService.findCurrentUser(username);
+    return { user };
   }
 
   @Put()
   @UseGuards(AuthGuard())
-  update(
+  async update(
     @User() { username }: UserEntity,
-    @Body(new ValidationPipe({ transform: true, whitelist: true }))
-    data: { user: UpdateUserDTO },
-  ) {
-    return this.authService.updateUser(username, data.user);
+    @Body('user', new ValidationPipe({ transform: true, whitelist: true }))
+    data: UpdateUserDTO,
+  ): Promise<ResponseObject<'user', AuthResponse>> {
+    const user = await this.authService.updateUser(username, data);
+    return { user };
   }
 }

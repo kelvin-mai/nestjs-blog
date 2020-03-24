@@ -5,10 +5,16 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDTO, RegisterDTO, UpdateUserDTO } from 'src/models/user.model';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
+
+import { UserEntity } from 'src/entities/user.entity';
+import {
+  LoginDTO,
+  RegisterDTO,
+  UpdateUserDTO,
+  AuthResponse,
+} from 'src/models/user.model';
 
 @Injectable()
 export class AuthService {
@@ -17,13 +23,13 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(credentials: RegisterDTO) {
+  async register(credentials: RegisterDTO): Promise<AuthResponse> {
     try {
       const user = this.userRepo.create(credentials);
       await user.save();
       const payload = { username: user.username };
       const token = this.jwtService.sign(payload);
-      return { user: { ...user.toJSON(), token } };
+      return { ...user.toJSON(), token };
     } catch (err) {
       if (err.code === '23505') {
         throw new ConflictException('Username has already been taken');
@@ -32,7 +38,7 @@ export class AuthService {
     }
   }
 
-  async login({ email, password }: LoginDTO) {
+  async login({ email, password }: LoginDTO): Promise<AuthResponse> {
     try {
       const user = await this.userRepo.findOne({ where: { email } });
       const isValid = await user.comparePassword(password);
@@ -41,24 +47,27 @@ export class AuthService {
       }
       const payload = { username: user.username };
       const token = this.jwtService.sign(payload);
-      return { user: { ...user.toJSON(), token } };
+      return { ...user.toJSON(), token };
     } catch (err) {
       throw new UnauthorizedException('Invalid credentials');
     }
   }
 
-  async findCurrentUser(username: string) {
+  async findCurrentUser(username: string): Promise<AuthResponse> {
     const user = await this.userRepo.findOne({ where: { username } });
     const payload = { username };
     const token = this.jwtService.sign(payload);
-    return { user: { ...user.toJSON(), token } };
+    return { ...user.toJSON(), token };
   }
 
-  async updateUser(username: string, data: UpdateUserDTO) {
+  async updateUser(
+    username: string,
+    data: UpdateUserDTO,
+  ): Promise<AuthResponse> {
     await this.userRepo.update({ username }, data);
     const user = await this.userRepo.findOne({ where: { username } });
     const payload = { username };
     const token = this.jwtService.sign(payload);
-    return { user: { ...user.toJSON(), token } };
+    return { ...user.toJSON(), token };
   }
 }

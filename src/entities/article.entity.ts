@@ -4,13 +4,13 @@ import {
   BeforeInsert,
   ManyToOne,
   ManyToMany,
-  JoinColumn,
   RelationCount,
   JoinTable,
   OneToMany,
 } from 'typeorm';
 import { classToPlain } from 'class-transformer';
 import * as slugify from 'slug';
+
 import { AbstractEntity } from './abstract-entity';
 import { UserEntity } from './user.entity';
 import { CommentEntity } from './comment.entity';

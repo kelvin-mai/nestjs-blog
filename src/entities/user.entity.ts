@@ -5,11 +5,11 @@ import {
   JoinTable,
   ManyToMany,
   OneToMany,
-  JoinColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { Exclude, classToPlain } from 'class-transformer';
 import { IsEmail } from 'class-validator';
+
 import { AbstractEntity } from './abstract-entity';
 import { ArticleEntity } from './article.entity';
 import { CommentEntity } from './comment.entity';

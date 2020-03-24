@@ -1,9 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt } from 'passport-jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from 'src/entities/user.entity';
+import { Strategy, ExtractJwt } from 'passport-jwt';
 import { Repository } from 'typeorm';
+
+import { UserEntity } from 'src/entities/user.entity';
 import { AuthPayload } from 'src/models/user.model';
 
 @Injectable()

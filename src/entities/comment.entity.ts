@@ -1,5 +1,6 @@
-import { Entity, Column, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, Column, ManyToOne } from 'typeorm';
 import { classToPlain } from 'class-transformer';
+
 import { AbstractEntity } from './abstract-entity';
 import { UserEntity } from './user.entity';
 import { ArticleEntity } from './article.entity';

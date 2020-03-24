@@ -10,19 +10,22 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-import { ArticleService } from './article.service';
 import { AuthGuard } from '@nestjs/passport';
+
 import { User } from 'src/auth/user.decorator';
+import { OptionalAuthGuard } from 'src/auth/optional-auth.gaurd';
+import { CreateCommentDTO, CommentResponse } from 'src/models/comment.models';
 import { UserEntity } from 'src/entities/user.entity';
 import {
   CreateArticleDTO,
   UpdateArticleDTO,
   FindAllQuery,
   FindFeedQuery,
+  ArticleResponse,
 } from 'src/models/article.models';
-import { OptionalAuthGuard } from 'src/auth/optional-auth.gaurd';
 import { CommentsService } from './comments.service';
-import { CreateCommentDTO } from 'src/models/comment.models';
+import { ArticleService } from './article.service';
+import { ResponseObject } from 'src/models/response.model';
 
 @Controller('articles')
 export class ArticleController {
@@ -33,21 +36,39 @@ export class ArticleController {
 
   @Get()
   @UseGuards(new OptionalAuthGuard())
-  async findAll(@User() user: UserEntity, @Query() query: FindAllQuery) {
+  async findAll(
+    @User() user: UserEntity,
+    @Query() query: FindAllQuery,
+  ): Promise<
+    ResponseObject<'articles', ArticleResponse[]> &
+      ResponseObject<'articlesCount', number>
+  > {
     const articles = await this.articleService.findAll(user, query);
-    return { articles, articlesCount: articles.length };
+    return {
+      articles,
+      articlesCount: articles.length,
+    };
   }
 
   @Get('/feed')
   @UseGuards(AuthGuard())
-  async findFeed(@User() user: UserEntity, @Query() query: FindFeedQuery) {
+  async findFeed(
+    @User() user: UserEntity,
+    @Query() query: FindFeedQuery,
+  ): Promise<
+    ResponseObject<'articles', ArticleResponse[]> &
+      ResponseObject<'articlesCount', number>
+  > {
     const articles = await this.articleService.findFeed(user, query);
     return { articles, articlesCount: articles.length };
   }
 
   @Get('/:slug')
   @UseGuards(new OptionalAuthGuard())
-  async findBySlug(@Param('slug') slug: string, @User() user: UserEntity) {
+  async findBySlug(
+    @Param('slug') slug: string,
+    @User() user: UserEntity,
+  ): Promise<ResponseObject<'article', ArticleResponse>> {
     const article = await this.articleService.findBySlug(slug);
     return { article: article.toArticle(user) };
   }
@@ -56,9 +77,9 @@ export class ArticleController {
   @UseGuards(AuthGuard())
   async createArticle(
     @User() user: UserEntity,
-    @Body(ValidationPipe) data: { article: CreateArticleDTO },
-  ) {
-    const article = await this.articleService.createArticle(user, data.article);
+    @Body('article', ValidationPipe) data: CreateArticleDTO,
+  ): Promise<ResponseObject<'article', ArticleResponse>> {
+    const article = await this.articleService.createArticle(user, data);
     return { article };
   }
 
@@ -67,25 +88,26 @@ export class ArticleController {
   async updateArticle(
     @Param('slug') slug: string,
     @User() user: UserEntity,
-    @Body(ValidationPipe) data: { article: UpdateArticleDTO },
-  ) {
-    const article = await this.articleService.updateArticle(
-      slug,
-      user,
-      data.article,
-    );
+    @Body('article', ValidationPipe) data: UpdateArticleDTO,
+  ): Promise<ResponseObject<'article', ArticleResponse>> {
+    const article = await this.articleService.updateArticle(slug, user, data);
     return { article };
   }
 
   @Delete('/:slug')
   @UseGuards(AuthGuard())
-  async deleteArticle(@Param() slug: string, @User() user: UserEntity) {
+  async deleteArticle(
+    @Param() slug: string,
+    @User() user: UserEntity,
+  ): Promise<ResponseObject<'article', ArticleResponse>> {
     const article = await this.articleService.deleteArticle(slug, user);
     return { article };
   }
 
   @Get('/:slug/comments')
-  async findComments(@Param('slug') slug: string) {
+  async findComments(
+    @Param('slug') slug: string,
+  ): Promise<ResponseObject<'comments', CommentResponse[]>> {
     const comments = await this.commentService.findByArticleSlug(slug);
     return { comments };
   }
@@ -93,21 +115,27 @@ export class ArticleController {
   @Post('/:slug/comments')
   async createComment(
     @User() user: UserEntity,
-    @Body(ValidationPipe) data: { comment: CreateCommentDTO },
-  ) {
-    const comment = await this.commentService.createComment(user, data.comment);
+    @Body('comment', ValidationPipe) data: CreateCommentDTO,
+  ): Promise<ResponseObject<'comment', CommentResponse>> {
+    const comment = await this.commentService.createComment(user, data);
     return { comment };
   }
 
   @Delete('/:slug/comments/:id')
-  async deleteComment(@User() user: UserEntity, @Param('id') id: number) {
+  async deleteComment(
+    @User() user: UserEntity,
+    @Param('id') id: number,
+  ): Promise<ResponseObject<'comment', CommentResponse>> {
     const comment = await this.commentService.deleteComment(user, id);
     return { comment };
   }
 
   @Post('/:slug/favorite')
   @UseGuards(AuthGuard())
-  async favoriteArticle(@Param('slug') slug: string, @User() user: UserEntity) {
+  async favoriteArticle(
+    @Param('slug') slug: string,
+    @User() user: UserEntity,
+  ): Promise<ResponseObject<'article', ArticleResponse>> {
     const article = await this.articleService.favoriteArticle(slug, user);
     return { article };
   }
@@ -117,7 +145,7 @@ export class ArticleController {
   async unfavoriteArticle(
     @Param('slug') slug: string,
     @User() user: UserEntity,
-  ) {
+  ): Promise<ResponseObject<'article', ArticleResponse>> {
     const article = await this.articleService.unfavoriteArticle(slug, user);
     return { article };
   }

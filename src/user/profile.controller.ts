@@ -8,11 +8,14 @@ import {
   UseGuards,
   HttpCode,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { AuthGuard } from '@nestjs/passport';
+
 import { User } from 'src/auth/user.decorator';
 import { UserEntity } from 'src/entities/user.entity';
-import { AuthGuard } from '@nestjs/passport';
 import { OptionalAuthGuard } from 'src/auth/optional-auth.gaurd';
+import { UserService } from './user.service';
+import { ResponseObject } from 'src/models/response.model';
+import { ProfileResponse } from 'src/models/user.model';
 
 @Controller('profiles')
 export class ProfileController {
@@ -23,7 +26,7 @@ export class ProfileController {
   async findProfile(
     @Param('username') username: string,
     @User() user: UserEntity,
-  ) {
+  ): Promise<ResponseObject<'profile', ProfileResponse>> {
     const profile = await this.userService.findByUsername(username, user);
     if (!profile) {
       throw new NotFoundException();
@@ -37,7 +40,7 @@ export class ProfileController {
   async followUser(
     @User() user: UserEntity,
     @Param('username') username: string,
-  ) {
+  ): Promise<ResponseObject<'profile', ProfileResponse>> {
     const profile = await this.userService.followUser(user, username);
     return { profile };
   }
@@ -47,7 +50,7 @@ export class ProfileController {
   async unfollowUser(
     @User() user: UserEntity,
     @Param('username') username: string,
-  ) {
+  ): Promise<ResponseObject<'profile', ProfileResponse>> {
     const profile = await this.userService.unfollowUser(user, username);
     return { profile };
   }
