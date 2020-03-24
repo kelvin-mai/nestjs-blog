@@ -8,6 +8,11 @@ import {
   UseGuards,
   HttpCode,
 } from '@nestjs/common';
+import {
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
 import { User } from 'src/auth/user.decorator';
@@ -21,6 +26,7 @@ import { ProfileResponse } from 'src/models/user.model';
 export class ProfileController {
   constructor(private userService: UserService) {}
 
+  @ApiOkResponse({ description: 'Find user profile' })
   @Get('/:username')
   @UseGuards(new OptionalAuthGuard())
   async findProfile(
@@ -34,6 +40,9 @@ export class ProfileController {
     return { profile };
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Follow user' })
+  @ApiUnauthorizedResponse()
   @Post('/:username/follow')
   @HttpCode(200)
   @UseGuards(AuthGuard())
@@ -45,6 +54,9 @@ export class ProfileController {
     return { profile };
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Unfollow user' })
+  @ApiUnauthorizedResponse()
   @Delete('/:username/follow')
   @UseGuards(AuthGuard())
   async unfollowUser(

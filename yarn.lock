@@ -447,6 +447,14 @@
     "@angular-devkit/schematics" "9.0.6"
     fs-extra "8.1.0"
 
+"@nestjs/swagger@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@nestjs/swagger/-/swagger-4.4.0.tgz#0d778b9e0c6cf68acb378d46332439c173e867e3"
+  integrity sha512-QatyTW8VANCEltPErW1t3yBam17e/5fsaZI7DfnLEMtya5LypDlicKdQN1BrWDbhBEhSbwQ5TZifdUs7lo3dlw==
+  dependencies:
+    lodash "4.17.15"
+    path-to-regexp "3.2.0"
+
 "@nestjs/testing@^7.0.0":
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/@nestjs/testing/-/testing-7.0.1.tgz#07832d45f42636821232d693750dc400e304b046"
@@ -6935,6 +6943,18 @@ supports-hyperlinks@^2.0.0:
   dependencies:
     has-flag "^4.0.0"
     supports-color "^7.0.0"
+
+swagger-ui-dist@^3.18.1:
+  version "3.25.0"
+  resolved "https://registry.yarnpkg.com/swagger-ui-dist/-/swagger-ui-dist-3.25.0.tgz#90279cdcc56e591fcfbe7b5240a9d653b989336d"
+  integrity sha512-vwvJPPbdooTvDwLGzjIXinOXizDJJ6U1hxnJL3y6U3aL1d2MSXDmKg2139XaLBhsVZdnQJV2bOkX4reB+RXamg==
+
+swagger-ui-express@^4.1.4:
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/swagger-ui-express/-/swagger-ui-express-4.1.4.tgz#8b814ad998b850a1cf90e71808d6d0a8a8daf742"
+  integrity sha512-Ea96ecpC+Iq9GUqkeD/LFR32xSs8gYqmTW1gXCuKg81c26WV6ZC2FsBSPVExQP6WkyUuz5HEiR0sEv/HCC343g==
+  dependencies:
+    swagger-ui-dist "^3.18.1"
 
 symbol-observable@1.2.0:
   version "1.2.0"

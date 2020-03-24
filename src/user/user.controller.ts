@@ -6,18 +6,31 @@ import {
   Body,
   ValidationPipe,
 } from '@nestjs/common';
+import {
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiUnauthorizedResponse,
+  ApiBody,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
 import { User } from 'src/auth/user.decorator';
 import { AuthService } from 'src/auth/auth.service';
 import { UserEntity } from 'src/entities/user.entity';
-import { UpdateUserDTO, AuthResponse } from 'src/models/user.model';
+import {
+  UpdateUserDTO,
+  AuthResponse,
+  UpdateUserBody,
+} from 'src/models/user.model';
 import { ResponseObject } from 'src/models/response.model';
 
 @Controller('user')
 export class UserController {
   constructor(private authService: AuthService) {}
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Current user' })
+  @ApiUnauthorizedResponse()
   @Get()
   @UseGuards(AuthGuard())
   async findCurrentUser(
@@ -27,6 +40,10 @@ export class UserController {
     return { user };
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Update current user' })
+  @ApiUnauthorizedResponse()
+  @ApiBody({ type: UpdateUserBody })
   @Put()
   @UseGuards(AuthGuard())
   async update(

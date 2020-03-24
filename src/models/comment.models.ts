@@ -1,10 +1,18 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
-import { ProfileResponse } from './user.model';
+
 import { UserEntity } from 'src/entities/user.entity';
+import { ProfileResponse } from './user.model';
 
 export class CreateCommentDTO {
   @IsString()
+  @ApiProperty()
   body: string;
+}
+
+export class CreateCommentBody {
+  @ApiProperty()
+  comment: CreateCommentDTO;
 }
 
 export class CommentResponse {

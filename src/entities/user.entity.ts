@@ -13,6 +13,7 @@ import { IsEmail } from 'class-validator';
 import { AbstractEntity } from './abstract-entity';
 import { ArticleEntity } from './article.entity';
 import { CommentEntity } from './comment.entity';
+import { UserResponse } from 'src/models/user.model';
 
 @Entity('users')
 export class UserEntity extends AbstractEntity {
@@ -73,8 +74,8 @@ export class UserEntity extends AbstractEntity {
     return await bcrypt.compare(attempt, this.password);
   }
 
-  toJSON() {
-    return classToPlain(this);
+  toJSON(): UserResponse {
+    return <UserResponse>classToPlain(this);
   }
 
   toProfile(user?: UserEntity) {

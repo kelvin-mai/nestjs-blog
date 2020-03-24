@@ -4,6 +4,7 @@ import { classToPlain } from 'class-transformer';
 import { AbstractEntity } from './abstract-entity';
 import { UserEntity } from './user.entity';
 import { ArticleEntity } from './article.entity';
+import { CommentResponse } from 'src/models/comment.models';
 
 @Entity('comments')
 export class CommentEntity extends AbstractEntity {
@@ -24,6 +25,6 @@ export class CommentEntity extends AbstractEntity {
   article: ArticleEntity;
 
   toJSON() {
-    return classToPlain(this);
+    return <CommentResponse>classToPlain(this);
   }
 }

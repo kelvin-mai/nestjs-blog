@@ -10,11 +10,8 @@ export class AppService {
     @InjectRepository(TagEntity) private tagRepo: Repository<TagEntity>,
   ) {}
 
-  getHello(): string {
-    return 'Hello World!';
-  }
-
-  findTags() {
-    return this.tagRepo.find();
+  async findTags(): Promise<string[]> {
+    const tags = await this.tagRepo.find();
+    return tags.map(tag => tag.tag);
   }
 }

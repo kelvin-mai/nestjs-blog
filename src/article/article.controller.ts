@@ -11,10 +11,21 @@ import {
   Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+  ApiCreatedResponse,
+  ApiBody,
+} from '@nestjs/swagger';
 
 import { User } from 'src/auth/user.decorator';
 import { OptionalAuthGuard } from 'src/auth/optional-auth.gaurd';
-import { CreateCommentDTO, CommentResponse } from 'src/models/comment.models';
+import {
+  CreateCommentDTO,
+  CommentResponse,
+  CreateCommentBody,
+} from 'src/models/comment.models';
 import { UserEntity } from 'src/entities/user.entity';
 import {
   CreateArticleDTO,
@@ -22,6 +33,8 @@ import {
   FindAllQuery,
   FindFeedQuery,
   ArticleResponse,
+  CreateArticleBody,
+  UpdateArticleBody,
 } from 'src/models/article.models';
 import { CommentsService } from './comments.service';
 import { ArticleService } from './article.service';
@@ -34,6 +47,7 @@ export class ArticleController {
     private commentService: CommentsService,
   ) {}
 
+  @ApiOkResponse({ description: 'List all articles' })
   @Get()
   @UseGuards(new OptionalAuthGuard())
   async findAll(
@@ -50,6 +64,9 @@ export class ArticleController {
     };
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'List all articles of users feed' })
+  @ApiUnauthorizedResponse()
   @Get('/feed')
   @UseGuards(AuthGuard())
   async findFeed(
@@ -63,6 +80,7 @@ export class ArticleController {
     return { articles, articlesCount: articles.length };
   }
 
+  @ApiOkResponse({ description: 'Article with slug :slug' })
   @Get('/:slug')
   @UseGuards(new OptionalAuthGuard())
   async findBySlug(
@@ -73,6 +91,10 @@ export class ArticleController {
     return { article: article.toArticle(user) };
   }
 
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Create article' })
+  @ApiUnauthorizedResponse()
+  @ApiBody({ type: CreateArticleBody })
   @Post()
   @UseGuards(AuthGuard())
   async createArticle(
@@ -83,6 +105,10 @@ export class ArticleController {
     return { article };
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Update article' })
+  @ApiUnauthorizedResponse()
+  @ApiBody({ type: UpdateArticleBody })
   @Put('/:slug')
   @UseGuards(AuthGuard())
   async updateArticle(
@@ -94,6 +120,9 @@ export class ArticleController {
     return { article };
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Delete article' })
+  @ApiUnauthorizedResponse()
   @Delete('/:slug')
   @UseGuards(AuthGuard())
   async deleteArticle(
@@ -104,6 +133,7 @@ export class ArticleController {
     return { article };
   }
 
+  @ApiOkResponse({ description: 'List article comments' })
   @Get('/:slug/comments')
   async findComments(
     @Param('slug') slug: string,
@@ -112,6 +142,10 @@ export class ArticleController {
     return { comments };
   }
 
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Create new comment' })
+  @ApiUnauthorizedResponse()
+  @ApiBody({ type: CreateCommentBody })
   @Post('/:slug/comments')
   async createComment(
     @User() user: UserEntity,
@@ -121,6 +155,9 @@ export class ArticleController {
     return { comment };
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Delete comment' })
+  @ApiUnauthorizedResponse()
   @Delete('/:slug/comments/:id')
   async deleteComment(
     @User() user: UserEntity,
@@ -130,6 +167,9 @@ export class ArticleController {
     return { comment };
   }
 
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ description: 'Favorite article' })
+  @ApiUnauthorizedResponse()
   @Post('/:slug/favorite')
   @UseGuards(AuthGuard())
   async favoriteArticle(
@@ -140,6 +180,9 @@ export class ArticleController {
     return { article };
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Unfavorite article' })
+  @ApiUnauthorizedResponse()
   @Delete('/:slug/favorite')
   @UseGuards(AuthGuard())
   async unfavoriteArticle(
